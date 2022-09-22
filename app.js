@@ -15,7 +15,7 @@ const urlRoute = require("./routes/urlRoute");
 const swaggerUI = require("swagger-ui-express");
 const swaggerJsDoc = require("swagger-jsdoc");
 
-const dbMergeScript = require("./db_merge_scripts/merge_dbs");
+// const dbMergeScript = require("./db_merge_scripts/merge_dbs");
 const dbMigrationScript = require("./db_merge_scripts/migrate_dbs");
 
 const options = {
@@ -30,11 +30,11 @@ const options = {
   apis: ["./routes/*.js"],
 };
 
-const specs = swaggerJsDoc(options);
+// const specs = swaggerJsDoc(options);
 
 const app = express();
 
-app.use("/docs", swaggerUI.serve, swaggerUI.setup(specs));
+// app.use("/docs", swaggerUI.serve, swaggerUI.setup(specs));
 
 /*const parse = require('url-parse')
 const baseUrl = process.env.BASEURL;
@@ -76,8 +76,7 @@ app.use(function (req, res, next) {
 app.use(morgan("tiny"));
 // routes
 
-app.get("/api/v1/merge", dbMergeScript.merge);
-app.get("/api/v1/merge/:id", dbMergeScript.merge_one);
+
 app.get("/api/v1/migrate", dbMigrationScript);
 app.use("/api/v1", apiRoute);
 app.use("/", urlRoute);
@@ -95,7 +94,8 @@ db.authenticate()
   })
   .catch((err) => console.log("Unable to connect to Database ", err));
 
-db.sync();
+// db.sync({ alter: true });
+// dbMigrationScript()
 
 // 404 not found
 

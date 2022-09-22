@@ -6,7 +6,7 @@ const generateUniqueId = require("generate-unique-id");
 const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
 //const sequelize = require("../config/db");
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const ResetPasswords = require("../models").resetpassword;
 const Profile = require("../models").profile;
 
@@ -19,7 +19,7 @@ exports.getUserProfile = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,

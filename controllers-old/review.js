@@ -1,6 +1,6 @@
 const Job = require("../models").eventjob;
 const Review = require("../models").review;
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const Assignedjob = require("../models").assignjob;
 
 exports.createReview = async (req, res, next) => {

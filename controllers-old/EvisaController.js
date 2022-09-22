@@ -2,7 +2,7 @@ require("dotenv").config();
 const generateUniqueId = require("generate-unique-id");
 const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const Profile = require("../models").profile;
 const Evisa = require("../models").evisa;
 const EmailService = require("../service/emailService");

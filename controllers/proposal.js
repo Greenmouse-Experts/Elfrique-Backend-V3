@@ -1,7 +1,7 @@
 const Proposal = require("../models").proposal;
 const Eventjob = require("../models").eventjob;
 const Event = require("../models").event;
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const cloudinary = require("../helpers/cloudinary");
 
 exports.createProposal = async (req, res, next) => {

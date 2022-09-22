@@ -6,7 +6,7 @@ const generateUniqueId = require("generate-unique-id");
 const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
 //const sequelize = require("../config/db");
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const ResetPasswords = require("../models").resetpassword;
 const Profile = require("../models").profile;
 const votingContest = require("../models").votingcontest;
@@ -32,7 +32,7 @@ exports.createAwardContest = async (req, res) => {
     req.body.adminuserId = adminuserId;
     req.body.image = result.secure_url;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -61,7 +61,7 @@ exports.getAllAwardsContest = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -77,7 +77,7 @@ exports.getAllAwardsContest = async (req, res) => {
       });
     }
     const awards = await awardContest.findAll({
-      where: { adminuserId },
+      where: { id: adminuserId },
     });
     return res.status(200).send({
       awards,
@@ -139,7 +139,7 @@ exports.updateAwardContest = async (req, res) => {
     const adminuserId = req.user.id;
     req.body.adminuserId = adminuserId;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -176,7 +176,7 @@ exports.deleteAwardContest = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -213,7 +213,7 @@ exports.createAwardCategories = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -329,7 +329,7 @@ exports.createAwardNominees = async (req, res) => {
     req.body.image = result.secure_url;
     //const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -539,7 +539,7 @@ exports.getAllUserVotes = async (req, res) => {
       });
     }
     const userAwards = await awardContest.findAll({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         // {
         //   model: awardNominees,

@@ -6,7 +6,7 @@ const generateUniqueId = require("generate-unique-id");
 const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
 //const sequelize = require("../config/db");
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const ResetPasswords = require("../models").resetpassword;
 const Profile = require("../models").profile;
 const votingContest = require("../models").votingContest;
@@ -123,7 +123,7 @@ exports.transactionHistoryByUser = async (req, res) => {
     const adminuserId = req.user.id;
     req.body.adminuserId = adminuserId;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -163,7 +163,7 @@ exports.transactionHistoryByCategory = async (req, res) => {
     const adminuserId = req.user.id;
     req.body.adminuserId = adminuserId;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,

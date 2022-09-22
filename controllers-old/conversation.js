@@ -1,5 +1,5 @@
 const Conversation = require("../models").conversation;
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const { Op } = require("sequelize");
 
 exports.AddChat = async (userId, receiverId, message) => {

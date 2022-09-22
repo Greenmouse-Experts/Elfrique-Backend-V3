@@ -1,5 +1,6 @@
 require("dotenv").config();
 const bcrypt = require("bcryptjs");
+const crypto = require("crypto");
 const jwt = require("jsonwebtoken");
 
 const generateUniqueId = require("generate-unique-id");
@@ -20,14 +21,6 @@ exports.getUserProfile = async (req, res) => {
     const adminuserId = req.user.id;
     const user = await User.findOne({
       where: { id: adminuserId },
-      include: [
-        {
-          model: User,
-          attributes: {
-            exclude: ["password", "createdAt", "updatedAt", "deletedAt"],
-          },
-        },
-      ],
     });
     // const user_votes_count = req.user.findAll({
     //   attributes: {
@@ -51,7 +44,37 @@ exports.getUserProfile = async (req, res) => {
       });
     }
     return res.status(200).send({
-      user,
+      profile: {
+        id: user.id,
+        firstname: user.first_name,
+        lastname: user.last_name,
+        phonenumber: user.phone,
+        email: user.profile_email,
+        accountnumber: user.account_number,
+        accountname: user.account_name,
+        about: user.about,
+        bankname: user.bank,
+        gender: user.gender,
+        twitterURL: user.twitter_url,
+        facebookURL: user.facebook_url,
+        instagramURL: user.instagram_url,
+        createdAt: user.createdAt,
+        updatedAt: user.updatedAt,
+        adminuser: {
+          id: user.id,
+          firstname: user.first_name,
+          lastname: user.last_name,
+          phonenumber: user.phone,
+          email: user.email,
+          password: user.password,
+          referral_email: user.ref_email,
+          email_token: user.verification_token,
+          activated: user.verification_status,
+          reference: user.reference,
+          referral_id: user.referral_id,
+          role: user.admin_level ? "admin" : "seller",
+        },
+      },
     });
   } catch (error) {
     console.log(error);
@@ -65,13 +88,13 @@ exports.editUserProfile = async (req, res) => {
       where: {
         id: req.user.id,
       },
-      include: [
-        {
-          model: Profile,
-          as: "profile",
-          attributes: excludeAtrrbutes,
-        },
-      ],
+      // include: [
+      //   {
+      //     model: Profile,
+      //     as: "profile",
+      //     attributes: excludeAtrrbutes,
+      //   },
+      // ],
     });
     if (!user) {
       return res.status(404).send({
@@ -85,11 +108,27 @@ exports.editUserProfile = async (req, res) => {
       },
     }); */
 
-    const profile = await Profile.findOne({
-      where: { adminuserId: req.user.id },
-    });
+    // const profile = await Profile.findOne({
+    //   where: { adminuserId: req.user.id },
+    // });
 
-    await profile.update(req.body);
+    await user.update({
+      // id: 1,
+
+      first_name: req.body.firstname,
+      last_name: req.body.lastname,
+      phone: req.body.phonenumber,
+      profile_email: req.body.email,
+      account_number: req.body.accountnumber,
+      account_name: req.body.accountname,
+      about: req.body.about,
+      bank: req.body.bankname,
+      gender: req.body.gender,
+      twitter_url: req.body.twitterURL,
+      facebook_url: req.body.facebookURL,
+      instagram_url: req.body.instagramURL,
+      updatedAt: req.body.updatedAt,
+    });
     return res.status(200).send({
       message: "Profile updated successfully",
     });
@@ -105,13 +144,13 @@ exports.changePassWord = async (req, res) => {
       where: {
         id: req.user.id,
       },
-      include: [
-        {
-          model: Profile,
-          as: "profile",
-          attributes: excludeAtrrbutes,
-        },
-      ],
+      // include: [
+      //   {
+      //     model: Profile,
+      //     as: "profile",
+      //     attributes: excludeAtrrbutes,
+      //   },
+      // ],
     });
     if (!user) {
       return res.status(404).send({
@@ -119,7 +158,13 @@ exports.changePassWord = async (req, res) => {
       });
     }
     const { oldPassword, newPassword } = req.body;
-    const isMatch = await bcrypt.compare(oldPassword, user.password);
+    let isMatch = await bcrypt.compare(oldPassword, user.password);
+    // let compare = bcrypt.compareSync(password, user.password);
+    if (user.password[0] != "$") {
+      isMatch =
+        crypto.createHash("sha1").update(oldPassword).digest("hex") ===
+        user.password;
+    }
     if (!isMatch) {
       return res.status(401).send({
         message: "Incorrect password",

@@ -6,7 +6,7 @@ require("dotenv").config();
 // const uniqueString = require("unique-string");
 // const nodemailer = require("nodemailer");
 //const sequelize = require("../config/db");
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 // const ResetPasswords = require("../models").resetpassword;
 const Profile = require("../models").profile;
 const Trivia = require("../models").trivia;
@@ -30,7 +30,7 @@ exports.createTrivia = async (req, res) => {
     const adminuserId = req.user.id;
     req.body.adminuserId = adminuserId;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -61,7 +61,7 @@ exports.getAllTrivia = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -77,7 +77,7 @@ exports.getAllTrivia = async (req, res) => {
       });
     }
     const trivia = await Trivia.findAll({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: Question,
@@ -114,7 +114,7 @@ exports.addQuestion = async (req, res) => {
     const adminuserId = req.user.id;
     req.body.adminuserId = adminuserId;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -188,7 +188,7 @@ exports.updateQuestions = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,

@@ -16,7 +16,7 @@ const axios = require("axios");
 const User = require("../models").organiser;
 //local imports
 
-const Admin = require("../models").adminuser;
+const Admin = require("../models").organiser;
 const ResetPasswords = require("../models").ResetPassword;
 // imports initialization
 const { Op } = require("sequelize");

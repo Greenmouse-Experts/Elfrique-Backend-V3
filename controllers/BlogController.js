@@ -1,5 +1,5 @@
 require("dotenv").config();
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const Profile = require("../models").profile;
 const Blog = require("../models").blog;
 

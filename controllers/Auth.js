@@ -5,10 +5,10 @@ const jwt = require("jsonwebtoken");
 const generateUniqueId = require("generate-unique-id");
 const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
-const User = require("../models").adminuser;
-const ResetPasswords = require("../models").resetpassword;
-const profile = require("../models").profile;
-const SuperAdmin = require("../models").superadmin;
+const User = require("../models").organiser;
+// const ResetPasswords = require("../models").resetpassword;
+// const profile = require("../models").profile;
+// const SuperAdmin = require("../models").superadmin;
 const Referrals = require("../models").Referral;
 
 const excludeAtrrbutes = { exclude: ["createdAt", "updatedAt", "deletedAt"] };
@@ -393,14 +393,17 @@ exports.registerUser = async (req, res, next) => {
 exports.login = async (req, res, next) => {
   try {
     const { email, password } = req.body;
-    const user = await User.findOne({
+    let user = await User.findOne({
       where: { email },
-      attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
+      attributes: {
+        exclude: ["createdAt", "updatedAt", "deletedAt", "date_added"],
+      },
     });
     if (!user) {
       return res.status(400).send({ message: "User not found" });
     } else {
-      if (user.activated !== 1) {
+      console.log("user is", user);
+      if (user.verification_status !== 1) {
         return res.status(400).send({
           message:
             "Account not activated: Check your email for activation link",
@@ -415,6 +418,13 @@ exports.login = async (req, res, next) => {
         if (!compare) {
           return res.status(400).send({ message: "Invalid Password" });
         } else {
+          if (!user.reference) {
+            uniqueRef = generateUniqueId({
+              length: 8,
+              useLetters: true,
+            });
+            user = await user.update({ reference: uniqueRef });
+          }
           const payload = {
             user: {
               id: user.id,
@@ -423,7 +433,25 @@ exports.login = async (req, res, next) => {
           const token = jwt.sign(payload, process.env.JWT_SECRET, {
             expiresIn: "3d",
           });
-          return res.status(200).send({ token, user });
+
+          return res.status(200).send({
+            token,
+            user: {
+              ...user,
+              id: user.id,
+              firstname: user.first_name,
+              lastname: user.last_name,
+              phonenumber: user.phone,
+              email: user.email,
+              password: user.password,
+              referral_email: user.ref_email,
+              email_token: user.verification_token,
+              activated: user.verification_status,
+              reference: user.reference,
+              referral_id: user.referral_id,
+              role: user.admin_level ? "admin" : "seller",
+            },
+          });
         }
       }
     }

@@ -6,7 +6,7 @@ const generateUniqueId = require("generate-unique-id");
 const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
 //const sequelize = require("../config/db");
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const ResetPasswords = require("../models").resetpassword;
 const Profile = require("../models").profile;
 const votingContest = require("../models").votingContest;
@@ -32,7 +32,7 @@ exports.createVoteContest = async (req, res) => {
     req.body.adminuserId = adminuserId;
     req.body.image = result.secure_url;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -61,7 +61,7 @@ exports.getallVOteContest = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -132,7 +132,7 @@ exports.updateVoteContest = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -169,7 +169,7 @@ exports.deleteVoteContest = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -213,7 +213,7 @@ exports.createContestants = async (req, res) => {
     //req.body.adminuserId = adminuserId;
     req.body.image = result.secure_url;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -386,7 +386,7 @@ exports.addSponsor = async (req, res) => {
     req.body.image = result.secure_url;
     //const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -429,7 +429,7 @@ exports.addInfo = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -656,7 +656,7 @@ exports.getAllUserVotes = async (req, res) => {
       });
     }
     const userContests = await votingContest.findAll({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         // {
         //   model: contestant,

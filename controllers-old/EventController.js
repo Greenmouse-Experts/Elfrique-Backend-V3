@@ -6,7 +6,7 @@ const generateUniqueId = require("generate-unique-id");
 const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
 //const sequelize = require("../config/db");
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const ResetPasswords = require("../models").resetpassword;
 const Profile = require("../models").profile;
 const Event = require("../models").event;
@@ -35,7 +35,7 @@ exports.createEvents = async (req, res) => {
     req.body.adminuserId = adminuserId;
     req.body.image = result.secure_url;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -64,7 +64,7 @@ exports.getAllUserEvents = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -141,7 +141,7 @@ exports.deleteEvent = async (req, res) => {
   try {
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,
@@ -176,7 +176,7 @@ exports.editEvent = async (req, res) => {
     }
     const adminuserId = req.user.id;
     const profile = await Profile.findOne({
-      where: { adminuserId },
+      where: { id: adminuserId },
       include: [
         {
           model: User,

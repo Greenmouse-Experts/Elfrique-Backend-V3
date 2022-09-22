@@ -1,5 +1,5 @@
 const Ads = require("../models").ads;
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 const cloudinary = require("../helpers/cloudinary");
 
 exports.createAds = async (req, res, next) => {

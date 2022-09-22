@@ -1,5 +1,5 @@
 const Sequelize = require("sequelize");
-const adminUsers = require("../models").adminuser;
+const adminUsers = require("../models").organiser;
 // imports initialization
 const Op = Sequelize.Op;
 

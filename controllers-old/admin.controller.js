@@ -13,7 +13,7 @@ const Vendor = require("../models").vendorsub;
 const moment = require("moment");
 const axios = require("axios");
 const generateUniqueId = require("generate-unique-id");
-const User = require("../models").adminuser;
+const User = require("../models").organiser;
 //local imports
 
 const Admin = require("../models/").adminuser;
