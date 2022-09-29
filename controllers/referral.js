@@ -6,7 +6,6 @@ const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
 const User = require("../models").organiser;
 const ResetPasswords = require("../models").resetpassword;
-const Profile = require("../models").profile;
 const SuperAdmin = require("../models").superadmin;
 const Referrals = require("../models").Referral;
 
@@ -23,7 +22,7 @@ exports.getUserReferrals = async (req, res) => {
         id: adminId,
       },
     });
-    if (superadmin.role !== "admin") {
+    if (superadmin.admin_level) {
       return res.status(404).send({
         message: "Only SuperAdmin can access this route",
       });
@@ -39,7 +38,7 @@ exports.getUserReferrals = async (req, res) => {
           },
           include: [
             {
-              model: Profile,
+              model: User,
               attributes: {
                 exclude: ["createdAt", "updatedAt", "deletedAt"],
               },
@@ -62,7 +61,7 @@ exports.getUserReferrals = async (req, res) => {
 exports.getReferralByUser = async (req, res) => {
   try {
     const adminuserId = req.user.id;
-    const profile = await Profile.findOne({
+    const user = await User.findOne({
       where: { id: adminuserId },
       include: [
         {
@@ -73,7 +72,7 @@ exports.getReferralByUser = async (req, res) => {
         },
       ],
     });
-    if (!profile) {
+    if (!user) {
       return res.status(404).send({
         message: "User not found",
       });
@@ -81,7 +80,7 @@ exports.getReferralByUser = async (req, res) => {
 
     const referrals = await Referrals.findAll({
       where: {
-        Referral_id: profile.adminuserId,
+        Referral_id: user.adminuserId,
       },
       include: [
         {
@@ -92,7 +91,7 @@ exports.getReferralByUser = async (req, res) => {
           },
           include: [
             {
-              model: Profile,
+              model: User,
               attributes: {
                 exclude: ["createdAt", "updatedAt", "deletedAt"],
               },

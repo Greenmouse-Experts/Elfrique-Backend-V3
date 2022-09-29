@@ -33,7 +33,7 @@ exports.getAllUsers = async (req, res) => {
         id: adminId,
       },
     });
-    if (superadmin.role !== "admin") {
+    if (superadmin.admin_level) {
       return res.status(404).send({
         message: "Only SuperAdmin can access this route",
       });
@@ -70,12 +70,12 @@ exports.getAllContest = async (req, res) => {
         id: adminId,
       },
     });
-    if (superadmin.role !== "admin") {
+    if (superadmin.admin_level) {
       return res.status(404).send({
         message: "Only SuperAdmin can access this route",
       });
     }
-console.log("\n\nsuperadmiiiin\n\n");
+    console.log("\n\nsuperadmiiiin\n\n");
     const contest = await VoteContestController.findAllVoteContest(req, res);
 
     return contest;
@@ -94,7 +94,7 @@ exports.getAllEvents = async (req, res) => {
         id: adminId,
       },
     });
-    if (superadmin.role !== "admin") {
+    if (superadmin.admin_level) {
       return res.status(404).send({
         message: "Only SuperAdmin can access this route",
       });
@@ -118,7 +118,7 @@ exports.getAllForms = async (req, res) => {
         id: adminId,
       },
     });
-    if (superadmin.role !== "admin") {
+    if (superadmin.admin_level) {
       return res.status(404).send({
         message: "Only SuperAdmin can access this route",
       });
@@ -142,7 +142,7 @@ exports.getAllTrivia = async (req, res) => {
         id: adminId,
       },
     });
-    if (superadmin.role !== "admin") {
+    if (superadmin.admin_level) {
       return res.status(404).send({
         message: "Only SuperAdmin can access this route",
       });
@@ -166,7 +166,7 @@ exports.getAllShortUrl = async (req, res, next) => {
         id: adminId,
       },
     });
-    if (superadmin.role !== "admin") {
+    if (superadmin.admin_level) {
       return res.status(404).send({
         message: "Only SuperAdmin can access this route",
       });

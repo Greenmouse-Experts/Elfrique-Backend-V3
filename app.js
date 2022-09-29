@@ -94,8 +94,9 @@ db.authenticate()
   })
   .catch((err) => console.log("Unable to connect to Database ", err));
 
+// db.sync({});
 // db.sync({ alter: true });
-// dbMigrationScript()
+dbMigrationScript()
 
 // 404 not found
 

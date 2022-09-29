@@ -4,14 +4,15 @@ const bcrypt = require("bcryptjs");
 const Sequelize = require("sequelize");
 const uniqueString = require("unique-string");
 const nodemailer = require("nodemailer");
-const Event = require("../models").event;
-const EventForm = require("../models").eventform;
-const Ticket = require("../models").eventsTicket;
-const votingContest = require("../models").votingContest;
-const Trivia = require("../models").trivia;
-const Vendor = require("../models").vendorsub;
-const moment = require("moment");
-const axios = require("axios");
+const Event = require("../models").event_detail;
+const Trivia = require("../models").trivia_detail;
+const votingContest = require("../models").voting_detail;
+const EventForm = require("../models").form_detail;
+// const Ticket = require("../models").eventsTicket;
+
+// const Vendor = require("../models").vendorsub;
+// const moment = require("moment");
+// const axios = require("axios");
 // const generateUniqueId = require("generate-unique-id");
 const User = require("../models").organiser;
 //local imports
@@ -133,41 +134,188 @@ exports.loginAdminUser = async (req, res, next) => {
   }
 };
 
-exports.getDashboard = (req, res) => {
-  User.findOne({
-    where: {
-      id: {
-        [Op.eq]: req.query.id,
+exports.getDashboard = async (req, res) => {
+  try {
+    const organiser = await User.findOne({
+      where: {
+        id: {
+          [Op.eq]: req.query.id,
+        },
       },
-    },
-    include: [
-      {
-        model: Event,
-        include: [
-          {
-            model: Ticket,
-          },
-        ],
-      },
-      {
-        model: EventForm,
-      },
-      {
-        model: Trivia,
-      },
-      {
-        model: votingContest,
-      },
-    ],
-  })
-    .then((user) => {
-      res.send(user);
-    })
-    .catch((err) => {
-      res.status(500).send({
-        message: err.message || "Some error occurred while searching eventJob.",
-      });
+      include: [
+        {
+          model: Event,
+          // include: [
+          //   {
+          //     model: Ticket,
+          //   },
+          // ],
+        },
+        {
+          model: Trivia,
+        },
+        {
+          model: EventForm,
+        },
+
+        {
+          model: votingContest,
+        },
+      ],
     });
+    if (!organiser) {
+      return res.status(500).send({
+        message: "User not found.",
+      });
+    }
+    // const trivia = await Trivia.findAll({
+    //   where: {
+    //     organiser_id: organiser.id,
+    //   },
+    // });
+    // const votingContests = await votingContest.findAll({
+    //   where: {
+    //     organisers_id: organiser.id,
+    //   },
+    // });
+    await res.send({
+      id: organiser.id,
+      firstname: organiser.first_name,
+      lastname: organiser.last_name,
+      phonenumber: organiser.phone,
+      email: organiser.email,
+      password: organiser.password,
+      referral_email: organiser.ref_email,
+      email_token: organiser.verification_token,
+      activated: organiser.verification_status,
+      reference: organiser.reference,
+      referral_id: organiser.referral_id,
+      role: organiser.admin_level,
+      createdAt: organiser.createdAt,
+      updatedAt: organiser.updatedAt,
+      events: organiser.event_details,
+      votingContests: organiser.voting_details,
+      trivia: organiser.trivia_details,
+      eventforms: organiser.form_details,
+    });
+  } catch (err) {
+    res.status(500).send({
+      message: "Server error ",
+    });
+  }
+  // User.findOne({
+  //   where: {
+  //     id: {
+  //       [Op.eq]: req.query.id,
+  //     },
+  //   },
+  //   include: [
+  //     {
+  //       model: Event,
+  //       // include: [
+  //       //   {
+  //       //     model: Ticket,
+  //       //   },
+  //       // ],
+  //     },
+  //     // {
+  //     //   model: Trivia,
+  //     // },
+  //     // {
+  //     //   model: EventForm,
+  //     // },
+
+  //     // {
+  //     //   model: votingContest,
+  //     // },
+  //   ],
+  // })
+  //   .then((user) => {
+  //     console.log("user is", user);
+  //     res.send({
+  //       id: user.id,
+  //       firstname: user.first_name,
+  //       lastname: user.last_name,
+  //       phonenumber: user.phone,
+  //       email: user.email,
+  //       password: user.password,
+  //       referral_email: user.ref_email,
+  //       email_token: user.verification_token,
+  //       activated: user.verification_status,
+  //       reference: user.reference,
+  //       referral_id: user.referral_id,
+  //       role: user.admin_level,
+  //       createdAt: user.createdAt,
+  //       updatedAt: user.updatedAt,
+  //       events: [...user.event_details],
+  //       trivia: user.trivia_details,
+  //       // eventforms: [
+  //       //   {
+  //       //     identification_name: null,
+  //       //     id: "Aw6zBnMAUS",
+  //       //     title: "New form",
+  //       //     image:
+  //       //       "https://res.cloudinary.com/tashy2022/image/upload/v1663082277/kcipheji0iaq0h788n7b.jpg",
+  //       //     description: "Descrip",
+  //       //     startdate: "2022-09-13T16:17:00.000Z",
+  //       //     closedate: "2021-07-15T16:17:00.000Z",
+  //       //     timezone: "Indian/Chagos",
+  //       //     fee: "",
+  //       //     type: "free",
+  //       //     adminuserId: "NvdAQKkN7Y",
+  //       //     paymentgateway: "",
+  //       //     createdAt: "2022-09-13T15:17:58.000Z",
+  //       //     updatedAt: "2022-09-13T15:17:58.000Z",
+  //       //     deletedAt: null,
+  //       //   },
+  //       //   {
+  //       //     identification_name: null,
+  //       //     id: "PgFV0gCXNO",
+  //       //     title: "Title of my event form",
+  //       //     image:
+  //       //       "https://res.cloudinary.com/tashy2022/image/upload/v1663082194/prhd1lev8ycofb7o02dm.jpg",
+  //       //     description: "The description for this form",
+  //       //     startdate: "2022-09-13T16:15:00.000Z",
+  //       //     closedate: "2022-12-31T18:15:00.000Z",
+  //       //     timezone: "Africa/Lagos",
+  //       //     fee: "",
+  //       //     type: "free",
+  //       //     adminuserId: "NvdAQKkN7Y",
+  //       //     paymentgateway: "",
+  //       //     createdAt: "2022-09-13T15:16:34.000Z",
+  //       //     updatedAt: "2022-09-13T15:16:34.000Z",
+  //       //     deletedAt: null,
+  //       //   },
+  //       // ],
+
+  //       // votingContests: [
+  //       //   {
+  //       //     id: "gYW25hHlIJ",
+  //       //     title: "Halloween Contest",
+  //       //     type: "paid",
+  //       //     identification_name: null,
+  //       //     votelimit: "unlimited",
+  //       //     startdate: "2022-09-13",
+  //       //     closedate: "2022-10-01",
+  //       //     timezone: "Africa/Lagos",
+  //       //     paymentgateway: "paystack",
+  //       //     fee: "100",
+  //       //     packagestatus: "disabled",
+  //       //     image:
+  //       //       "https://res.cloudinary.com/tashy2022/image/upload/v1663076281/zojrwcd6z1ddqusvbpxy.jpg",
+  //       //     status: true,
+  //       //     createdAt: "2022-09-13T13:38:02.000Z",
+  //       //     updatedAt: "2022-09-13T13:38:02.000Z",
+  //       //     adminuserId: "NvdAQKkN7Y",
+  //       //   },
+  //       // ],
+  //     });
+  //   })
+  //   .catch((err) => {
+  //     res.status(500).send({
+  //       message: err.message || "Some error occurred while searching eventJob.",
+  //     });
+  //   });
 };
 
 exports.postGetLink = async (req, res, next) => {

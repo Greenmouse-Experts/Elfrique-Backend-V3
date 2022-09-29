@@ -52,10 +52,11 @@ exports.registerUser = async (req, res, next) => {
       });
       if (reference) {
         newUser = await User.create({
-          firstname,
-          lastname,
-          phonenumber,
-          email,
+          first_name: firstname,
+          last_name: lastname,
+          phone: phonenumber,
+          email: email,
+          profile_email: email,
           password: hashPwd,
           referral_id: reference.id,
           reference: uniqueRef,
@@ -67,22 +68,15 @@ exports.registerUser = async (req, res, next) => {
         });
       } else {
         newUser = await User.create({
-          firstname,
-          lastname,
-          phonenumber,
-          email,
+          first_name: firstname,
+          last_name: lastname,
+          phone: phonenumber,
+          email: email,
+          profile_email: email,
           password: hashPwd,
           reference: uniqueRef,
         });
       }
-
-      const newProfile = await profile.create({
-        firstname,
-        lastname,
-        phonenumber,
-        email,
-        adminuserId: newUser.id,
-      });
 
       let user_email = newUser.email;
       let email_token = uniqueString();
@@ -374,7 +368,7 @@ exports.registerUser = async (req, res, next) => {
         } else {
           // console.log('Mail Sent: ', info);
           const update = await User.update(
-            { email_token },
+            { verification_token: email_token },
             { where: { email } }
           );
           return res.status(200).send({
@@ -465,15 +459,15 @@ exports.verifyEmail = async (req, res, next) => {
   try {
     const email_token = req.query.token;
     const user = await User.findOne({
-      where: { email_token },
+      where: { verification_token: email_token },
       attributes: { exclude: ["createdAt", "updatedAt", "deletedAt"] },
     });
     if (!user) {
       return res.status(400).send({ message: "User not found" });
     } else {
       const update = await User.update(
-        { activated: 1 },
-        { where: { email_token } }
+        { verification_status: 1 },
+        { where: { verification_token: email_token } }
       );
       return res.status(200).send({ message: "Account activated" });
     }
@@ -889,25 +883,40 @@ exports.createSuperAdmin = async (req, res, next) => {
       });
 
       newUser = await User.create({
-        firstname,
-        lastname,
-        phonenumber,
-        email,
+        first_name: firstname,
+        last_name: lastname,
+        phone: phonenumber,
+        email: email,
         password: hashPwd,
-        activated: 1,
-        role: "admin",
+        verification_status: 1,
+        admin_level: 1,
       });
 
-      const newProfile = await profile.create({
-        firstname,
-        lastname,
-        phonenumber,
-        email,
-        adminuserId: newUser.id,
-      });
+      // const newProfile = await profile.create({
+      //   firstname,
+      //   lastname,
+      //   phonenumber,
+      //   email,
+      //   adminuserId: newUser.id,
+      // });
 
       return res.status(200).send({ message: "SuperAdmin created" });
     }
+  } catch (error) {
+    return res.status(500).send({ message: error });
+  }
+};
+exports.makeSuperAdmin = async (req, res, next) => {
+  try {
+    const userId = req.params.id;
+    const userAdmin = await User.findOne({ where: { id: userId } });
+
+    updateUser = await userAdmin.update({
+      verification_status: 1,
+      admin_level: 1,
+    });
+
+    return res.status(200).send({ message: "SuperAdmin created" });
   } catch (error) {
     return res.status(500).send({ message: error });
   }

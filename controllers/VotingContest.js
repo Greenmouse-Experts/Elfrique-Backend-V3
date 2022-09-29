@@ -739,7 +739,7 @@ exports.adminGetAllUserContestsAndVotes = async (req, res) => {
     const superadmin = await User.findOne({
       where: { id: adminuserId },
     });
-    if (superadmin.role !== "admin") {
+    if (superadmin.admin_level) {
       return res.status(404).send({
         message: "Only SuperAdmin can access this route",
       });

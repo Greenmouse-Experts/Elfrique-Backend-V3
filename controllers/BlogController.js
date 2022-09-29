@@ -26,7 +26,7 @@ exports.createBlog = async (req, res) => {
         id: adminId,
       },
     });
-    if (!superadmin || superadmin.role !== "admin") {
+    if (!superadmin || superadmin.admin_level) {
       return res.status(400).send({
         message: "Only SuperAdmin can access this route",
       });
@@ -85,7 +85,7 @@ exports.updateABlog = async (req, res) => {
         id: adminId,
       },
     });
-    if (!superadmin || superadmin.role !== "admin") {
+    if (!superadmin || superadmin.admin_level) {
       return res.status(400).send({
         message: "Only SuperAdmin can access this route",
       });
@@ -124,7 +124,7 @@ exports.deleteABlog = async (req, res) => {
         id: adminId,
       },
     });
-    if (!superadmin || superadmin.role !== "admin") {
+    if (!superadmin || superadmin.admin_level) {
       return res.status(400).send({
         message: "Only SuperAdmin can access this route",
       });

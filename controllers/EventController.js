@@ -8,13 +8,13 @@ const nodemailer = require("nodemailer");
 //const sequelize = require("../config/db");
 const User = require("../models").organiser;
 const ResetPasswords = require("../models").resetpassword;
-const Profile = require("../models").profile;
-const Event = require("../models").event;
+const Event = require("../models").event_detail;
 const EventReferral = require("../models").eventReferral;
-const votingContest = require("../models").votingcontest;
-const awardContest = require("../models").awardContest;
-const awardCategories = require("../models").awardCategories;
-const awardNominees = require("../models").awardNominees;
+const Category = require("../models").event_category;
+// const votingContest = require("../models").votingcontest;
+// const awardContest = require("../models").awardContest;
+// const awardCategories = require("../models").awardCategories;
+// const awardNominees = require("../models").awardNominees;
 const eventsTicket = require("../models").eventsTicket;
 const Eventjob = require("../models").eventjob;
 const AssignJob = require("../models/").assignedjob;
@@ -32,25 +32,37 @@ exports.createEvents = async (req, res) => {
   try {
     const result = await cloudinary.uploader.upload(req.file.path);
     const adminuserId = req.user.id;
-    req.body.adminuserId = adminuserId;
+    // req.body.adminuserId = adminuserId;
     req.body.image = result.secure_url;
-    const profile = await Profile.findOne({
+    const user = await User.findOne({
       where: { id: adminuserId },
-      include: [
-        {
-          model: User,
-          attributes: {
-            exclude: ["password", "createdAt", "updatedAt", "deletedAt"],
-          },
-        },
-      ],
     });
-    if (!profile) {
+    const category = await Category.findOne({
+      where: { category_name: req.body.category },
+    });
+    if (!user) {
       return res.status(404).send({
         message: "User not found",
       });
     }
-    const events = await Event.create(req.body);
+    const events = await Event.create({
+      organisers_id: adminuserId,
+      image: result.secure_url,
+      title: req.body.title,
+      starting_date: req.body.startdate,
+      closing_date: req.body.enddate,
+      starting_time: req.body.starttime,
+      closing_time: req.body.endtime,
+      timezone: req.body.timezone,
+      venue: req.body.venue,
+      country: req.body.country,
+      state: req.body.state,
+      payment_gateway: req.body.paymentgateway,
+      city: req.body.city,
+      description: req.body.description,
+      event_category_id: category?.id,
+      organiser_name: req.body.organisation,
+    });
     return res.status(200).send({
       events,
     });
@@ -63,7 +75,7 @@ exports.createEvents = async (req, res) => {
 exports.getAllUserEvents = async (req, res) => {
   try {
     const adminuserId = req.user.id;
-    const profile = await Profile.findOne({
+    const user = await User.findOne({
       where: { id: adminuserId },
       include: [
         {
@@ -74,7 +86,7 @@ exports.getAllUserEvents = async (req, res) => {
         },
       ],
     });
-    if (!profile) {
+    if (!user) {
       return res.status(404).send({
         message: "User not found",
       });
@@ -116,7 +128,7 @@ exports.getSingleEvent = async (req, res) => {
           model: User,
           include: [
             {
-              model: Profile,
+              model: User,
               attributes: {
                 exclude: ["createdAt", "updatedAt", "deletedAt"],
               },
@@ -140,7 +152,7 @@ exports.getSingleEvent = async (req, res) => {
 exports.deleteEvent = async (req, res) => {
   try {
     const adminuserId = req.user.id;
-    const profile = await Profile.findOne({
+    const user = await User.findOne({
       where: { id: adminuserId },
       include: [
         {
@@ -151,7 +163,7 @@ exports.deleteEvent = async (req, res) => {
         },
       ],
     });
-    if (!profile) {
+    if (!user) {
       return res.status(404).send({
         message: "User not found",
       });
@@ -175,7 +187,7 @@ exports.editEvent = async (req, res) => {
       req.body.image = result.secure_url;
     }
     const adminuserId = req.user.id;
-    const profile = await Profile.findOne({
+    const user = await User.findOne({
       where: { id: adminuserId },
       include: [
         {
@@ -186,7 +198,7 @@ exports.editEvent = async (req, res) => {
         },
       ],
     });
-    if (!profile) {
+    if (!user) {
       return res.status(404).send({
         message: "User not found",
       });
@@ -217,7 +229,7 @@ exports.findAllEvents = async (req, res) => {
           model: User,
           include: [
             {
-              model: Profile,
+              model: User,
               attributes: {
                 exclude: ["createdAt", "updatedAt", "deletedAt"],
               },
@@ -382,7 +394,7 @@ exports.getAllJob = async (req, res, next) => {
               model: User,
               include: [
                 {
-                  model: Profile,
+                  model: User,
                   attributes: {
                     exclude: ["createdAt", "updatedAt", "deletedAt"],
                   },
@@ -438,7 +450,7 @@ exports.getAllJobSeller = async (req, res, next) => {
               model: User,
               include: [
                 {
-                  model: Profile,
+                  model: User,
                   attributes: {
                     exclude: ["createdAt", "updatedAt", "deletedAt"],
                   },
@@ -484,7 +496,7 @@ exports.getAllJobEvent = async (req, res, next) => {
               model: User,
               include: [
                 {
-                  model: Profile,
+                  model: User,
                   attributes: {
                     exclude: ["createdAt", "updatedAt", "deletedAt"],
                   },

@@ -1,7 +1,8 @@
 "use strict";
 const { Model } = require("sequelize");
+const {nanoid} = require("nanoid");
 module.exports = (sequelize, DataTypes) => {
-  class referral extends Model {
+  class Referral extends Model {
     /**
      * Helper method for defining associations.
      * This method is not a part of Sequelize lifecycle.
@@ -9,17 +10,26 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      referral.belongsTo(models.organiser);
+      Referral.belongsTo(models.adminuser, {
+        foreignKey: "user_id",
+        as: "user",
+      });
+
+      Referral.belongsTo(models.adminuser, {
+        foreignKey: "referral_id",
+        as: "referralID",
+      });
     }
   }
-  referral.init(
+  Referral.init(
     {
       id: {
-        autoIncrement: true,
-        type: DataTypes.INTEGER.UNSIGNED,
+        type: DataTypes.STRING(10),
+        autoincrement: false,
         allowNull: false,
         primaryKey: true,
-      },
+        defaultValue: () => nanoid(10)
+    },
       referral_id: {
         allowNull: true,
         type: DataTypes.STRING,
@@ -31,8 +41,11 @@ module.exports = (sequelize, DataTypes) => {
     },
     {
       sequelize,
-      modelName: "referral",
+      modelName: "Referral",
+      timestamps: true,
+      paranoid: true,
+      tableName: "referrals",
     }
   );
-  return referral;
+  return Referral;
 };

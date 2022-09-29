@@ -10,13 +10,22 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
+      organiser.hasMany(models.event_detail, {
+        foreignKey: { name: "organisers_id" },
+      });
+      organiser.hasMany(models.trivia_detail, {
+        foreignKey: { name: "organiser_id" },
+      });
+      organiser.hasMany(models.voting_detail, {
+        foreignKey: { name: "organisers_id" },
+      });
+      organiser.hasMany(models.form_detail, {
+        foreignKey: { name: "organiser_id" },
+      });
+      // organiser.hasOne(models.referral);
       // organiser.hasOne(models.profile);
-      // organiser.hasMany(models.votingContest);
       // organiser.hasMany(models.vendorsub);
       // organiser.hasMany(models.awardContest);
-      // organiser.hasMany(models.event);
-      // organiser.hasMany(models.trivia);
-      // organiser.hasMany(models.eventform);
       // organiser.hasMany(models.Referral, {
       //   foreignKey: "user_id",
       //   as: "ref_user",

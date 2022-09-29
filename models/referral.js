@@ -9,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      referral.belongsTo(models.organiser);
+      // referral.belongsTo(models.organiser);
     }
   }
   referral.init(
