@@ -5,6 +5,7 @@ const {
   trivia_detail,
   voting_detail,
   form_detail,
+  contestants,
 } = require("../models");
 
 module.exports = async (req, res) => {
@@ -14,6 +15,7 @@ module.exports = async (req, res) => {
   trivia_detail.sync({ alter: true });
   voting_detail.sync({ alter: true });
   form_detail.sync({ alter: true });
+  contestants.sync({ alter: true });
 
   console.log("Added models");
 };

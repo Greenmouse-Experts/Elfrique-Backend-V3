@@ -10,8 +10,12 @@ module.exports = (sequelize, DataTypes) => {
      */
     static associate(models) {
       // define association here
-      voting_detail.belongsTo(models.organiser);
-      // voting_detail.hasMany(models.contestants);
+      voting_detail.belongsTo(models.organiser, {
+        foreignKey: { name: "organisers_id" },
+      });
+      voting_detail.hasMany(models.contestants, {
+        foreignKey: { name: "voting_details_id" },
+      });
       // voting_detail.hasMany(models.contestInfo);
       // voting_detail.hasMany(models.sponsors);
       // voting_detail.hasMany(models.contestVote);

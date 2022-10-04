@@ -96,7 +96,7 @@ db.authenticate()
 
 // db.sync({});
 // db.sync({ alter: true });
-dbMigrationScript()
+// dbMigrationScript()
 
 // 404 not found
 

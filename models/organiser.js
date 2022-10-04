@@ -18,6 +18,7 @@ module.exports = (sequelize, DataTypes) => {
       });
       organiser.hasMany(models.voting_detail, {
         foreignKey: { name: "organisers_id" },
+        // as: "adminuser",
       });
       organiser.hasMany(models.form_detail, {
         foreignKey: { name: "organiser_id" },

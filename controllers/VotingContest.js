@@ -9,14 +9,14 @@ const nodemailer = require("nodemailer");
 const User = require("../models").organiser;
 const ResetPasswords = require("../models").resetpassword;
 const Profile = require("../models").profile;
-const votingContest = require("../models").votingContest;
+const votingContest = require("../models").voting_detail;
 const contestant = require("../models").contestants;
-const sponsors = require("../models").sponsors;
-const contestInfo = require("../models").contestInfo;
-const awardContest = require("../models").awardContest;
-const Transaction = require("../models").transaction;
-const contestVote = require("../models").contestVote;
-const { Service } = require("../service/payment");
+// const sponsors = require("../models").sponsors;
+// const contestInfo = require("../models").contestInfo;
+// const awardContest = require("../models").awardContest;
+// const Transaction = require("../models").transaction;
+// const contestVote = require("../models").contestVote;
+// const { Service } = require("../service/payment");
 
 const excludeAtrrbutes = { exclude: ["createdAt", "updatedAt", "deletedAt"] };
 
@@ -105,14 +105,7 @@ exports.getSingleVoteContest = async (req, res) => {
         },
         {
           model: User,
-          include: [
-            {
-              model: Profile,
-              attributes: {
-                exclude: ["createdAt", "updatedAt", "deletedAt"],
-              },
-            },
-          ],
+          // as: "adminuser",
           attributes: {
             exclude: ["password", "createdAt", "updatedAt", "deletedAt"],
           },
@@ -121,6 +114,10 @@ exports.getSingleVoteContest = async (req, res) => {
     });
     return res.status(200).send({
       voteContest,
+      // : {
+      // ...voteContest,
+      // adminuser: voteContest.organiser,
+      // },
     });
   } catch (error) {
     console.log(error);
@@ -471,29 +468,21 @@ exports.addInfo = async (req, res) => {
 exports.findAllVoteContest = async (req, res) => {
   try {
     const voteContests = await votingContest.findAll({
-      where: {
-        status: true,
-      },
+      // where: {
+      //   status: true,
+      // },
       include: [
         {
           model: contestant,
-          as: "contestants",
+          // as: "contestants",
           attributes: {
             exclude: ["createdAt", "updatedAt", "deletedAt"],
           },
         },
         {
           model: User,
-          include: [
-            {
-              model: Profile,
-              attributes: {
-                exclude: ["createdAt", "updatedAt", "deletedAt"],
-              },
-            },
-          ],
           attributes: {
-            exclude: ["password", "createdAt", "updatedAt", "deletedAt"],
+            exclude: ["password"],
           },
         },
       ],
