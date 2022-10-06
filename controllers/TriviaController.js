@@ -9,10 +9,10 @@ require("dotenv").config();
 const User = require("../models").organiser;
 // const ResetPasswords = require("../models").resetpassword;
 const Profile = require("../models").profile;
-const Trivia = require("../models").trivia;
-const Question = require("../models").question;
-const Options = require("../models").questionOption;
-const Player = require("../models").triviaplayer;
+const Trivia = require("../models").trivia_detail;
+// const Question = require("../models").question;
+// const Options = require("../models").questionOption;
+// const Player = require("../models").triviaplayer;
 
 // const excludeAtrrbutes = { exclude: ["createdAt", "updatedAt", "deletedAt"] };
 
@@ -29,18 +29,10 @@ exports.createTrivia = async (req, res) => {
     }
     const adminuserId = req.user.id;
     req.body.adminuserId = adminuserId;
-    const profile = await Profile.findOne({
+    const user = await User.findOne({
       where: { id: adminuserId },
-      include: [
-        {
-          model: User,
-          attributes: {
-            exclude: ["password", "createdAt", "updatedAt", "deletedAt"],
-          },
-        },
-      ],
     });
-    if (!profile) {
+    if (!user) {
       return res.status(404).send({
         message: "User not found",
       });
@@ -228,38 +220,38 @@ exports.updateQuestions = async (req, res) => {
 exports.findAllTrivias = async (req, res) => {
   try {
     const trivias = await Trivia.findAll({
-      order: [["createdAt", "DESC"]],
-      include: [
-        {
-          model: Question,
-          as: "questions",
-          attributes: {
-            exclude: ["createdAt", "updatedAt", "deletedAt"],
-          },
-          include: [
-            {
-              model: Options,
-              attributes: {
-                exclude: ["createdAt", "updatedAt", "deletedAt"],
-              },
-            },
-          ],
-        },
-        {
-          model: User,
-          include: [
-            {
-              model: Profile,
-              attributes: {
-                exclude: ["createdAt", "updatedAt", "deletedAt"],
-              },
-            },
-          ],
-          attributes: {
-            exclude: ["password", "createdAt", "updatedAt", "deletedAt"],
-          },
-        },
-      ],
+      order: [["date_added", "DESC"]],
+      // include: [
+      //   {
+      //     model: Question,
+      //     as: "questions",
+      //     attributes: {
+      //       exclude: ["createdAt", "updatedAt", "deletedAt"],
+      //     },
+      //     include: [
+      //       {
+      //         model: Options,
+      //         attributes: {
+      //           exclude: ["createdAt", "updatedAt", "deletedAt"],
+      //         },
+      //       },
+      //     ],
+      //   },
+      //   {
+      //     model: User,
+      //     include: [
+      //       {
+      //         model: Profile,
+      //         attributes: {
+      //           exclude: ["createdAt", "updatedAt", "deletedAt"],
+      //         },
+      //       },
+      //     ],
+      //     attributes: {
+      //       exclude: ["password", "createdAt", "updatedAt", "deletedAt"],
+      //     },
+      //   },
+      // ],
     });
     return res.status(200).send({
       trivias,
